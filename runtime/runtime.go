@@ -52,7 +52,7 @@ func NewRuntime() (*Runtime, error) {
 	return r, nil
 }
 
-func (r *Runtime) Close(ctx context.Context) error {
+func (r *Runtime) Close(_ context.Context) error {
 	err := r.Redis.Close()
 	if err != nil {
 		return err
