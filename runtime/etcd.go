@@ -13,7 +13,7 @@ type EtcdClient struct {
 	writeTimeout time.Duration
 }
 
-func NewEtcdClient(config *EtcdConfig) (*EtcdClient, error) {
+func newEtcdClient(config *EtcdConfig) (*EtcdClient, error) {
 	cli, err := clientv3.New(clientv3.Config{
 		Endpoints:   config.Endpoints,
 		DialTimeout: time.Duration(config.DialTimeout) * time.Second,

@@ -1,4 +1,4 @@
-package runtime
+package email
 
 import (
 	"bytes"
@@ -7,6 +7,8 @@ import (
 	"net"
 	"net/smtp"
 	"text/template"
+
+	"github.com/forgoes/visa/runtime"
 )
 
 type Email struct {
@@ -18,7 +20,7 @@ type Email struct {
 	Template *template.Template
 }
 
-func newEmail(config *Config) (*Email, error) {
+func newEmail(config *runtime.Config) (*Email, error) {
 	server := fmt.Sprintf("%s:%d", config.Deps.Email.Host, config.Deps.Email.Port)
 
 	tmpl, err := template.New("captcha.template").ParseFiles(config.Deps.Email.Template)

@@ -51,6 +51,7 @@ type PostgresConfig struct {
 	Port     int
 	SSL      bool
 	TimeZone string
+	Migrate  bool
 	Pool     struct {
 		MaxIdle int
 		MaxOpen int

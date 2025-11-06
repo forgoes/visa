@@ -8,6 +8,7 @@ type Runtime struct {
 	Flags      *Flags
 	Config     *Config
 	Redis      *Redis
+	PG         *Postgres
 	EtcdClient *EtcdClient
 }
 
@@ -35,20 +36,34 @@ func NewRuntime() (*Runtime, error) {
 		return nil, err
 	}
 	r.Redis = redis
-	/*
-		client, err := NewEtcdClient(&r.Config.Etcd)
-		if err != nil {
-			return nil, err
-		}
-		r.EtcdClient = client
 
-	*/
+	pg, err := newPostgres(r.Config)
+	if err != nil {
+		return nil, err
+	}
+	r.PG = pg
+
+	client, err := newEtcdClient(&r.Config.Deps.Etcd)
+	if err != nil {
+		return nil, err
+	}
+	r.EtcdClient = client
 
 	return r, nil
 }
 
 func (r *Runtime) Close(ctx context.Context) error {
 	err := r.Redis.Close()
+	if err != nil {
+		return err
+	}
+
+	err = r.PG.Close()
+	if err != nil {
+		return err
+	}
+
+	err = r.EtcdClient.Close()
 	if err != nil {
 		return err
 	}

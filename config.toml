@@ -23,23 +23,6 @@ debug = true
 host = "0.0.0.0"
 port = 8080
 
-[deps.etcd]
-endpoints = []
-dialTimeout = 3
-readTimeout = 3
-writeTimeout = 3
-
-[deps.postgres]
-host = "127.0.0.1"
-port = 3306
-db = ""
-user = ""
-password = ""
-maxOpen = 300
-maxIdle = 100
-maxLife = 3600
-migrate = true
-
 [deps.redis]
 address = "127.0.0.1:6379"
 user = ""
@@ -49,9 +32,33 @@ maxRetries = 3
 poolSize = 300
 minIdle = 30
 
-[deps.email]
+[deps.etcd]
+endpoints = ["127.0.0.1:2379"]
+dialTimeout = 3
+readTimeout = 3
+writeTimeout = 3
+
+[deps.postgres]
+host = "127.0.0.1"
+port = 5432
+db = ""
+user = ""
+password = ""
+ssl = false
+timeZone = "UTC"
+migrate = true
+[deps.postgres.pool]
+maxIdle = 100
+maxOpen = 300
+maxLife = 3600
+
+
+[integrations.google]
+[integrations.google.gmail]
 host = ""
 port = 587
 from = ""
 password = ""
 template = ""
+
+[integrations.x]

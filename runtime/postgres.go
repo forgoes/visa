@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"time"
@@ -17,10 +18,11 @@ type Postgres struct {
 func newPostgres(config *Config) (*Postgres, error) {
 	ssl := "disable"
 	if config.Deps.Postgres.SSL {
-		ssl = "enable"
+		ssl = "require"
 	}
 
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s timezone=%s",
 		config.Deps.Postgres.Host,
 		config.Deps.Postgres.User,
 		config.Deps.Postgres.Password,
@@ -45,7 +47,13 @@ func newPostgres(config *Config) (*Postgres, error) {
 	// SetMaxOpenConns sets the maximum number of open connections to the database.
 	sqlDB.SetMaxOpenConns(config.Deps.Postgres.Pool.MaxOpen)
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
-	sqlDB.SetConnMaxLifetime(time.Duration(config.Deps.Postgres.Pool.MaxLife) * time.Hour)
+	sqlDB.SetConnMaxLifetime(time.Duration(config.Deps.Postgres.Pool.MaxLife) * time.Second)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := sqlDB.PingContext(ctx); err != nil {
+		return nil, fmt.Errorf("ping postgres failed: %w", err)
+	}
 
 	return &Postgres{
 		DB:    db,
